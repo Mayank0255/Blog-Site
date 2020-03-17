@@ -1,0 +1,34 @@
+i.icon {
+    font-size: 2em;
+}
+
+#delete {
+    display: inline;
+}
+
+#special {
+    font-size: 1em;
+}
+
+.description>p {
+    line-height: 1.5em;
+}
+
+.content>span {
+    font-size: medium;
+}
+
+.ui.inverted.segment {
+    position: fixed !important;
+    width: 100vw;
+    z-index: 1;
+}
+
+label {
+    font-size: 1em !important;
+}
+
+#blog-segment {
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <title>Blog Site</title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.css">
+    <link rel="stylesheet" href="/stylesheets/app.css">
+    <link rel="icon" href="https://i.ya-webdesign.com/images/double-quote-png-11.png" type="image/icon">
+</head>
+
+<body>
+
+    <div class="ui inverted segment" style="border-radius: 0;">
+        <div class="ui inverted secondary menu">
+            <div style="margin-left: 30px; margin-right: 10px;" class="header item"><i class="quote left icon"></i>
+                <h3 style="margin-top: 0;">Blog Site</h3>
+            </div>
+            <a href="/blogs" class="item">Home</a>
+            <a href="/blogs/new" class="item">New Blog</a>
+            <!-- <div style="display: inline;"> -->
+            <% if(!currentUser){ %>
+                <a style="margin-left: 900px;" href="/login" class="active item">Login</a>
+                <a style="float: right;" href="/register" class="item">Sign-Up</a>
+                <% } else { %>
+                    <a style="margin-left: 900px;" href="#" class="item">Signed in as <%= currentUser.username %></a>
+                    <a style="float:right" href="/logout" class="item">Logout</a>
+                    <% } %>
+                        <!-- </div> -->
+        </div>
+    </div>
+
+    <br><br><br><br>
+
+    <div style="margin-top: 45px;" class="ui main text container">
+        <h1 style="text-align: center;">Login</h1>
+        <form class="ui form" action="/login" method="POST">
+            <div class="field">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="Enter your username">
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Enter your password">
+            </div>
+
+            <button class="ui button" type="submit">Submit</button>
+        </form>
+    </div>
+
+    <%include ./partials/footer%>

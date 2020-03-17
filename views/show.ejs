@@ -1,0 +1,73 @@
+<%include ./partials/header%>
+    <br>
+    <div class="ui main text container">
+        <div id="blog-segment" class="ui top attached segment">
+            <div class="ui center aligned huge header">
+                <%=blog.title%>
+            </div>
+            <div class="content">
+                <span style="float: right; "><strong> - By <%=blog.username.charAt(0).toUpperCase() + blog.username.slice(1)%></strong></span>
+            </div>
+            <br>
+            <br>
+            <div class="item">
+                <img src="<%=blog.image_url%>" alt="<%=blog.title%>" style="display: block; margin-left: auto; margin-right: auto; width: 80%;">
+                <br>
+                <div class="description">
+                    <p style="font-family:Helvetica, sans-serif;">
+                        <%-blog.body%>
+                    </p>
+                </div>
+                <br>
+                <span style="float: right; "><strong>Uploaded on <%=blog.created_at.toDateString()%></strong></span>
+                <br>
+                <% if(currentUser && currentUser.id == blog.user_id){ %>
+                    <a class="ui inverted orange button" href="/blogs/<%=blog.id%>/edit">Edit Blog</a>
+                    <form id="delete" action="/blogs/<%=blog.id%>?_method=DELETE" method="POST">
+                        <button class="ui inverted red button">Delete Blog</button>
+                    </form>
+                    <% } %>
+            </div>
+        </div>
+        <div class="ui top attached segment" style="background-color:#f0f0f0; padding-bottom: 30px;">
+            <form class="ui form" action="/blogs/<%=blog.id%>" method="POST">
+                <div class="field">
+                    <textarea rows="3" name="comment[comment_text]" placeholder="Leave a comment ..."></textarea>
+                </div>
+                <div style="text-align: right;">
+                    <button class="ui secondary button" style="background-color: #333333;" type="submit">Add Comment</button>
+                </div>
+            </form>
+            <hr style="margin: 7px 3px 7px 5px; background-color: #d5d5d5; border-color: #d5d5d5; border-style: solid; border-width: 0.8px; border-radius: 2px;">
+            <%comment.forEach(function(comment){%>
+                <div style="margin-top: 30px;">
+                    <div>
+                        <h3 style="display: inline-block;">
+                            <%=comment.username%>
+                        </h3>
+                        <% var date1 = new Date(); %>
+                            <% const _MS_PER_DAY = 1000 * 60 * 60 * 24; %>
+                                <% const utc1 = Date.UTC(date1.getFullYear(), date1.getMonth(), date1.getDate()); %>
+                                    <% const utc2 = Date.UTC(comment.created_at.getFullYear(), comment.created_at.getMonth(), comment.created_at.getDate()); %>
+                                        <span style="float: right; margin-right: 7px;">
+                                            <% if(Math.floor((utc2 - utc1) / _MS_PER_DAY) == 0){ %>
+                                                Just Now
+                                            <% } else { %>
+                                                <%=Math.floor((utc2 - utc1) / _MS_PER_DAY);%>
+                                            <% } %>
+                                        </span>
+                    </div>
+                    <% if(currentUser && currentUser.id == comment.user_id){ %>
+                        <form style="float: right;" action="/blogs/<%= blog.id %>/<%= comment.id %>?_method=DELETE" method="POST">
+                            <button class="ui inverted red button">Delete Blog</button>
+                        </form>
+                        <% } %>
+                            <p style="font-size:14px;">
+                                <%=comment.comment_text%>
+                            </p>
+
+                </div>
+                <%});%>
+        </div>
+    </div>
+    <%include ./partials/footer%>
