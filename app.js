@@ -1,4 +1,4 @@
-var express = require("express"),
+const express = require("express"),
     app = express(),
     session = require('express-session'),
     bodyParser = require("body-parser"),
@@ -38,10 +38,18 @@ app.use(function(req, res, next) {
 
 // DATABASE CONFIG
 
-var connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'Mayank15$',
+// const connection = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'root',
+//     password: 'Mayank15$',
+//     database: 'blog_app',
+//     multipleStatements: true
+// });
+
+const connection = mysql.createConnection({
+    host: "SG-blogapp-2420-master.servers.mongodirector.com",
+    user: 'mayank',
+    password: 'Parkview004$',
     database: 'blog_app',
     multipleStatements: true
 });
@@ -70,12 +78,12 @@ passport.use(
                 if (rows.length) {
                     return done(null, false, req.flash('signupMessage', 'That is already taken'));
                 } else {
-                    var newUserMysql = {
+                    const newUserMysql = {
                         username: username,
                         password: bcrypt.hashSync(password, null, null)
                     };
 
-                    var insertQuery = "INSERT INTO users (username, password) values (?, ?)";
+                    const insertQuery = "INSERT INTO users (username, password) values (?, ?)";
 
                     connection.query(insertQuery, [newUserMysql.username, newUserMysql.password],
                         function(err, rows) {
@@ -122,10 +130,10 @@ app.get("/", function(req, res) {
 });
 
 app.get("/blogs", function(req, res) {
-    var q = "SELECT * FROM blogs ORDER BY created_at DESC;";
-    var q2 = "SELECT COUNT(*) AS count FROM blogs;";
-    var q3 = "SELECT COUNT(*) AS count FROM users;";
-    var q4 = "SELECT COUNT(*) AS count FROM comments;";
+    const q = "SELECT * FROM blogs ORDER BY created_at DESC;";
+    const q2 = "SELECT COUNT(*) AS count FROM blogs;";
+    const q3 = "SELECT COUNT(*) AS count FROM users;";
+    const q4 = "SELECT COUNT(*) AS count FROM comments;";
     connection.query(q2 + q + q3 + q4, function(err, blogs, fields) {
         if (err) throw err;
         res.render("index", { blogs: blogs[1], blogcount: blogs[0][0].count, usercount: blogs[2][0].count, commentcount: blogs[3][0].count });
@@ -139,7 +147,6 @@ app.get("/blogs/new", isLoggedIn, function(req, res) {
 
 // CREATE ROUTE - BLOGS
 app.post("/blogs", isLoggedIn, function(req, res) {
-    // console.log(req.user.id);
     connection.query('INSERT INTO blogs(title,image_url,body,user_id) VALUES(?,?,?,?)', [req.body.blog.title, req.body.blog.image_url, req.body.blog.body, req.user.id], function(err, result) {
         if (err) throw err;
         res.redirect("/");
@@ -149,11 +156,10 @@ app.post("/blogs", isLoggedIn, function(req, res) {
 // SHOW ROUTE - BLOGS
 app.get("/blogs/:id", function(req, res) {
 
-    var q = "SELECT users.id,blogs.id,title,username,blogs.user_id,image_url,body,blogs.created_at FROM users JOIN blogs ON users.id=blogs.user_id WHERE blogs.id = " + req.params.id + ";";
-    var q2 = "SELECT comments.user_id,blogs.id,username,comments.id,comment_text,blog_id,comments.created_at FROM comments JOIN users ON users.id = comments.user_id JOIN blogs ON blogs.id = comments.blog_id WHERE blog_id =" + req.params.id + ";";
+    const q = "SELECT users.id,blogs.id,title,username,blogs.user_id,image_url,body,blogs.created_at FROM users JOIN blogs ON users.id=blogs.user_id WHERE blogs.id = " + req.params.id + ";";
+    const q2 = "SELECT comments.user_id,blogs.id,username,comments.id,comment_text,blog_id,comments.created_at FROM comments JOIN users ON users.id = comments.user_id JOIN blogs ON blogs.id = comments.blog_id WHERE blog_id =" + req.params.id + ";";
     connection.query(q + q2, function(err, blog) {
         if (err) throw err;
-        // console.log(blog[0][0]);
         res.render("show", { blog: blog[0][0], comment: blog[1] });
     });
 });
@@ -161,7 +167,7 @@ app.get("/blogs/:id", function(req, res) {
 // EDIT ROUTE - BLOGS
 
 app.get("/blogs/:id/edit", isLoggedIn, function(req, res) {
-    var q = "SELECT * FROM blogs WHERE id = " + req.params.id;
+    const q = "SELECT * FROM blogs WHERE id = " + req.params.id;
 
     connection.query(q, function(err, blog) {
         if (err) throw err;
@@ -172,7 +178,6 @@ app.get("/blogs/:id/edit", isLoggedIn, function(req, res) {
 // UPDATE ROUTE - BLOGS
 
 app.put("/blogs/:id", isLoggedIn, function(req, res) {
-    // console.log(req.body.blog);
 
     req.body.blog.body = req.sanitize(req.body.blog);
 
@@ -196,7 +201,7 @@ app.delete("/blogs/:id", isLoggedIn, function(req, res) {
 // CREATE ROUTE - COMMENTS
 
 app.post("/blogs/:id", isLoggedIn, function(req, res) {
-    var blog_id = req.params.id;
+    const blog_id = req.params.id;
     connection.query("INSERT INTO comments(comment_text,blog_id,user_id) VALUES(?,?,?);", [req.body.comment.comment_text, blog_id, req.user.id], function(error, comment, fields) {
         if (error) throw error;
         res.redirect("/blogs/" + blog_id);
