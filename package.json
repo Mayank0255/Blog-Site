@@ -19,7 +19,6 @@
     "express-sanitizer": "^1.0.5",
     "express-session": "^1.17.0",
     "method-override": "^3.0.0",
-    "mongoose": "^5.7.3",
     "mysql": "^2.18.1",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0"
