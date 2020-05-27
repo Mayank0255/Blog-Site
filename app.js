@@ -1,3 +1,6 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const express = require("express"),
     app = express(),
     session = require('express-session'),
@@ -5,7 +8,6 @@ const express = require("express"),
     expressSanitizer = require("express-sanitizer"),
     methodOverride = require("method-override"),
     mysql = require("mysql"),
-    mongoose = require("mongoose"),
     bcrypt = require('bcrypt-nodejs'),
     passport = require("passport"),
     flash = require("connect-flash"),
@@ -47,10 +49,10 @@ app.use(function(req, res, next) {
 // });
 
 const connection = mysql.createConnection({
-    host: "SG-blogapp-2420-master.servers.mongodirector.com",
-    user: 'mayank',
-    password: 'Parkview004$',
-    database: 'blog_app',
+    host: process.env.HOST,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE,
     multipleStatements: true
 });
 
@@ -262,6 +264,8 @@ function isLoggedIn(req, res, next) {
 }
 
 
-app.listen(3000, function() {
+const port = process.env.PORT || 3000;
+
+app.listen(port, function() {
     console.log("Start Blogging");
 });
