@@ -57,6 +57,13 @@ const connection = mysql.createConnection({
     multipleStatements: true
 });
 
+connection.connect((err) => {
+    if(err){
+        throw err;
+    }
+    console.log('MySql Connected...');
+});
+
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(function(id, done) {
     connection.query("SELECT * FROM users WHERE id = ? ", [id],
@@ -126,7 +133,7 @@ passport.use(
         })
 );
 
-connection.query('USE blog_app');
+// connection.query('USE blog_app');
 
 // ROUTES
 app.get("/", function(req, res) {
