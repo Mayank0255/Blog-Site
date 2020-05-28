@@ -13,8 +13,8 @@
             <div class="item">
                 <img src="<%=blog.image_url%>" alt="<%=blog.title%>" style="display: block; margin-left: auto; margin-right: auto; width: 80%;">
                 <br>
-                <div class="description">
-                    <p style="font-family:Helvetica, sans-serif;">
+                <div class="description" style="padding: 0 16px;">
+                    <p>
                         <%-blog.body%>
                     </p>
                 </div>
@@ -29,7 +29,7 @@
                     <% } %>
             </div>
         </div>
-        <div class="ui top attached segment" style="background-color:#f0f0f0; padding-bottom: 30px;">
+        <div class="ui top attached segment" style="background-color:#f0f0f0; padding: 24px 24px 40px 24px;">
             <form class="ui form" action="/blogs/<%=blog.id%>" method="POST">
                 <div class="field">
                     <textarea rows="3" name="comment[comment_text]" placeholder="Leave a comment ..."></textarea>

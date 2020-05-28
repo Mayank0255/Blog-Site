@@ -53,5 +53,3 @@ CREATE TABLE comments (
      1
  );
 
-
--- SELECT comments.id,title,blog_id,comments.user_id,username,comment_text FROM blogs JOIN comments ON comments.blog_id = blogs.id JOIN users ON users.id = comments.user_id;

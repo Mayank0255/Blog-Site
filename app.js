@@ -38,6 +38,7 @@ app.use(function(req, res, next) {
 });
 
 
+
 // DATABASE CONFIG
 
 // const connection = mysql.createConnection({
@@ -61,6 +62,7 @@ passport.deserializeUser(function(id, done) {
     connection.query("SELECT * FROM users WHERE id = ? ", [id],
         function(err, rows) {
             done(err, rows[0]);
+
         });
 });
 

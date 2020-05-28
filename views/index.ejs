@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <title>Blog Site</title>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.css">
+    <link rel="icon" href="/images/quote.png" type="image/icon">
     <link rel="stylesheet" href="/stylesheets/app.css">
-    <link rel="icon" href="https://i.ya-webdesign.com/images/double-quote-png-11.png" type="image/icon">
 </head>
 
 <body>
@@ -20,10 +20,10 @@
             <a href="/blogs/new" class="item">New Blog</a>
             <!-- <div style="display: inline;"> -->
             <% if(!currentUser){ %>
-                <a style="margin-left: 900px;" href="/login" class="item">Login</a>
+                <a id="authLink" style="margin-left: 55%;" href="/login" class="item">Login</a>
                 <a style="float: right;" href="/register" class="item">Sign-Up</a>
                 <% } else { %>
-                    <a style="margin-left: 900px;" href="#" class="item">Signed in as <%= currentUser.username %></a>
+                    <a id="authLink" style="margin-left: 55%;" href="#" class="item">Signed in as <%= currentUser.username %></a>
                     <a style="float:right" href="/logout" class="item">Logout</a>
                     <% } %>
                         <!-- </div> -->
@@ -31,7 +31,7 @@
     </div>
 
     <br><br><br><br>
-    <div class="ui labeled button" style="margin-top: 35px; margin-left: 30px; float: left; position: fixed;" tabindex="0">
+    <div class="ui labeled button" style="bottom: 30%; margin-left: 30px; float: left; position: fixed;" tabindex="0">
         <div class="ui secondary button">
             <strong><h3>Blog Count</h3></strong>
         </div>
@@ -41,7 +41,7 @@
             </h3>
         </a>
     </div>
-    <div class="ui labeled button" style="margin-top: 95px; margin-left: 30px; float: left; position: fixed;" tabindex="0">
+    <div class="ui labeled button" style="bottom: 20%; margin-left: 30px; float: left; position: fixed;" tabindex="0">
         <div class="ui secondary button">
             <strong><h3>User Count</h3></strong>
         </div>
@@ -51,9 +51,9 @@
             </h3>
         </a>
     </div>
-    <div class="ui labeled button" style="margin-top: 155px; margin-left: 30px; float: left; position: fixed;" tabindex="0">
+    <div class="ui labeled button" style="bottom: 10%; margin-left: 30px; float: left; position: fixed " tabindex="0">
         <div class="ui secondary button">
-            <strong><h3>Comment Count</h3></strong>
+            <h3><strong>Comment Count</strong></h3>
         </div>
         <a class="ui basic left pointing black label">
             <h3>
@@ -72,7 +72,7 @@
                             <img src="<%=blog.image_url%>" alt="<%=blog.title%>">
                         </div>
                         <div class="content">
-                            <a class="header" href="/blogs/<%=blog.id%>">
+                            <a class="header blogs-header" href="/blogs/<%=blog.id%>">
                                 <%=blog.title%>
                             </a>
                             <div class="meta">
@@ -84,13 +84,13 @@
                                         <%-blog.body.substring(0,200)%> ...
                                             <% } else { %>
                                                 <%-blog.body.substring(0,100)%>
-                                                    <% } %> ...</p>
+                                    ...<% } %></p>
                             </div>
                             <div class="extra">
                                 <a class="ui floated violet inverted button" href="/blogs/<%=blog.id%>">
-                Read More
-                <i id="special" class="chevron right icon"></i>
-                </a>
+                                    Read More
+                                    <i id="special" class="chevron right icon"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
