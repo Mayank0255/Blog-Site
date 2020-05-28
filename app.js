@@ -137,7 +137,7 @@ passport.use(
 
 // ROUTES
 app.get("/", function(req, res) {
-    res.redirect("/blogs");
+    res.send("WELCOME, GOTO /blogs");
 });
 
 app.get("/blogs", function(req, res) {
