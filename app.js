@@ -11,12 +11,47 @@ const express = require("express"),
     bcrypt = require('bcrypt-nodejs'),
     passport = require("passport"),
     flash = require("connect-flash"),
+    path = require("path"),
+    multer = require("multer"),
     LocalStrategy = require("passport-local");
+
+// Set The Storage Engine
+const storage = multer.diskStorage({
+    destination: './public/images/uploaded',
+    filename: function(req, file, cb){
+        cb(null,file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+// Init Upload
+const upload = multer({
+    storage: storage,
+    limits:{fileSize: 2000000},
+    fileFilter: function(req, file, cb){
+        checkFileType(file, cb);
+    }
+}).single('image');
+
+// Check File Type
+function checkFileType(file, cb){
+    // Allowed ext
+    const filetypes = /jpeg|jpg|png|gif/;
+    // Check ext
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    // Check mime
+    const mimetype = filetypes.test(file.mimetype);
+
+    if(mimetype && extname){
+        return cb(null,true);
+    } else {
+        cb('Error: Images Only!');
+    }
+}
 
 
 // APP CONFIG
 app.set("view engine", "ejs");
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressSanitizer());
 app.use(methodOverride("_method"));
@@ -69,7 +104,6 @@ passport.deserializeUser(function(id, done) {
     connection.query("SELECT * FROM users WHERE id = ? ", [id],
         function(err, rows) {
             done(err, rows[0]);
-
         });
 });
 
@@ -137,7 +171,8 @@ passport.use(
 
 // ROUTES
 app.get("/", function(req, res) {
-    res.send("WELCOME, GOTO /blogs");
+    // res.send("WELCOME, GOTO /blogs");
+    res.redirect("/blogs");
 });
 
 app.get("/blogs", function(req, res) {
@@ -158,9 +193,24 @@ app.get("/blogs/new", isLoggedIn, function(req, res) {
 
 // CREATE ROUTE - BLOGS
 app.post("/blogs", isLoggedIn, function(req, res) {
-    connection.query('INSERT INTO blogs(title,image_url,body,user_id) VALUES(?,?,?,?)', [req.body.blog.title, req.body.blog.image_url, req.body.blog.body, req.user.id], function(err, result) {
-        if (err) throw err;
-        res.redirect("/");
+    upload(req, res, (err) => {
+        if(err){
+            res.render('new', {
+                msg: err
+            });
+        } else {
+            if(req.file == undefined){
+                res.render('new', {
+                    msg: 'Error: No File Selected!'
+                });
+            } else {
+                console.log('File Uploaded!');
+                connection.query('INSERT INTO blogs(title,image_url,body,user_id) VALUES(?,?,?,?)', [req.body.blog.title, req.file.filename, req.body.blog.body, req.user.id], function(err, result) {
+                    if (err) throw err;
+                    res.redirect("/");
+                });
+            }
+        }
     });
 });
 
@@ -189,10 +239,9 @@ app.get("/blogs/:id/edit", isLoggedIn, function(req, res) {
 // UPDATE ROUTE - BLOGS
 
 app.put("/blogs/:id", isLoggedIn, function(req, res) {
+    const requestBody = req.sanitize(req.body.blog.body);
 
-    req.body.blog.body = req.sanitize(req.body.blog);
-
-    connection.query("UPDATE blogs SET title = ? , image_url = ? WHERE id = ? ", [req.body.blog.title, req.body.blog.image_url, req.params.id], function(err, blog, fields) {
+    connection.query("UPDATE blogs SET title = ? , body = ? WHERE id = ? ", [req.body.blog.title, requestBody, req.params.id], function(err, blog, fields) {
         if (err) throw err;
         res.redirect("/blogs/" + req.params.id);
     });

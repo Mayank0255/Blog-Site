@@ -34,14 +34,15 @@
 
     <div class="ui main text container segment form-content">
         <div class="ui huge header">New Blog</div>
-        <form class="ui form" action="/blogs" method="POST">
+        <%= typeof msg != 'undefined' ? msg : '' %>
+        <form class="ui form" action="/blogs" method="POST" enctype="multipart/form-data">
             <div class="field">
                 <label>Title</label>
                 <input type="text" name="blog[title]" placeholder="title">
             </div>
             <div class="field">
-                <label>Image Url</label>
-                <input type="text" name="blog[image_url]" placeholder="image url">
+                <label>Profile Image</label>
+                <input type="file" name="image">
             </div>
             <div class="field">
                 <label>Body</label>
