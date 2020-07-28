@@ -32,5 +32,13 @@ A Blog Application that provides the user the accessibility to perform most of t
     npm start (run the server)
     ```
 
+## DEMO
+  
+#### IMAGES:
+<img src="/demo/images/1.png" width=340px /><img src="/demo/images/2.png" width=340px />
+<img src="/demo/images/3.png" width=340px /><img src="/demo/images/4.png" width=340px />
+<img src="/demo/images/5.png" width=340px /><img src="/demo/images/6.png" width=340px />
+
+
 
 
