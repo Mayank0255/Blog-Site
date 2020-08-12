@@ -18,22 +18,22 @@ const express = require("express"),
 // Set The Storage Engine
 const storage = multer.diskStorage({
     destination: './public/images/uploaded',
-    filename: function(req, file, cb){
+    filename: (req, file, cb) => {
         cb(null,file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
 });
 
-// Init Upload
-const upload = multer({
-    storage: storage,
-    limits:{fileSize: 2000000},
-    fileFilter: function(req, file, cb){
-        checkFileType(file, cb);
+
+// Check if the user is logged in
+const isLoggedIn = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return next();
     }
-}).single('image');
+    res.redirect("/login");
+}
 
 // Check File Type
-function checkFileType(file, cb){
+const checkFileType = (file, cb) => {
     // Allowed ext
     const filetypes = /jpeg|jpg|png|gif/;
     // Check ext
@@ -48,6 +48,14 @@ function checkFileType(file, cb){
     }
 }
 
+// Init Upload
+const upload = multer({
+    storage: storage,
+    limits:{fileSize: 2000000},
+    fileFilter: (req, file, cb) => {
+        checkFileType(file, cb);
+    }
+}).single('image');
 
 // APP CONFIG
 app.set("view engine", "ejs");
@@ -67,7 +75,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
     res.locals.currentUser = req.user;
     next();
 });
@@ -88,9 +96,9 @@ connection.connect((err) => {
 });
 
 passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser(function(id, done) {
+passport.deserializeUser((id, done) => {
     connection.query("SELECT * FROM users WHERE id = ? ", [id],
-        function(err, rows) {
+        (err, rows) => {
             done(err, rows[0]);
         });
 });
@@ -103,8 +111,8 @@ passport.use(
             passwordField: 'password',
             passReqToCallback: true
         },
-        function(req, username, password, done) {
-            connection.query("SELECT * FROM users WHERE username = ? ", [username], function(err, rows) {
+        (req, username, password, done) => {
+            connection.query("SELECT * FROM users WHERE username = ? ", [username], (err, rows) => {
                 if (err)
                     return done(err);
                 if (rows.length) {
@@ -118,7 +126,7 @@ passport.use(
                     const insertQuery = "INSERT INTO users (username, password) values (?, ?)";
 
                     connection.query(insertQuery, [newUserMysql.username, newUserMysql.password],
-                        function(err, rows) {
+                        (err, rows) => {
                             newUserMysql.id = rows.insertId;
 
                             return done(null, newUserMysql);
@@ -137,9 +145,9 @@ passport.use(
             passwordField: 'password',
             passReqToCallback: true
         },
-        function(req, username, password, done) {
+        (req, username, password, done) => {
             connection.query("SELECT * FROM users WHERE username = ? ", [username],
-                function(err, rows) {
+                (err, rows) => {
                     if (err)
                         return done(err);
                     if (!rows.length) {
@@ -156,41 +164,41 @@ passport.use(
 connection.query('USE blog_app');
 
 // ROUTES
-app.get("/", function(req, res) {
+app.get("/", (req, res) => {
     res.redirect("/blogs");
 });
 
-app.get("/blogs", function(req, res) {
+app.get("/blogs", (req, res) => {
     const q = "SELECT * FROM blogs ORDER BY created_at DESC;";
     const q2 = "SELECT COUNT(*) AS count FROM blogs;";
     const q3 = "SELECT COUNT(*) AS count FROM users;";
     const q4 = "SELECT COUNT(*) AS count FROM comments;";
-    connection.query(q2 + q + q3 + q4, function(err, blogs, fields) {
+    connection.query(q2 + q + q3 + q4, (err, blogs, fields) => {
         if (err) throw err;
         res.render("index", { blogs: blogs[1], blogcount: blogs[0][0].count, usercount: blogs[2][0].count, commentcount: blogs[3][0].count });
     });
 });
 
 // NEW ROUTE - BLOGS
-app.get("/blogs/new", isLoggedIn, function(req, res) {
+app.get("/blogs/new", isLoggedIn, (req, res) => {
     res.render("new");
 });
 
 // CREATE ROUTE - BLOGS
-app.post("/blogs", isLoggedIn, function(req, res) {
+app.post("/blogs", isLoggedIn, (req, res) => {
     upload(req, res, (err) => {
         if(err){
             res.render('new', {
                 msg: err
             });
         } else {
-            if(req.file == undefined){
+            if(req.file === undefined){
                 res.render('new', {
                     msg: 'Error: No File Selected!'
                 });
             } else {
                 console.log('File Uploaded!');
-                connection.query('INSERT INTO blogs(title,image_url,body,user_id) VALUES(?,?,?,?)', [req.body.blog.title, req.file.filename, req.body.blog.body, req.user.id], function(err, result) {
+                connection.query('INSERT INTO blogs(title,image_url,body,user_id) VALUES(?,?,?,?)', [req.body.blog.title, req.file.filename, req.body.blog.body, req.user.id], (err, result) => {
                     if (err) throw err;
                     res.redirect("/");
                 });
@@ -200,11 +208,11 @@ app.post("/blogs", isLoggedIn, function(req, res) {
 });
 
 // SHOW ROUTE - BLOGS
-app.get("/blogs/:id", function(req, res) {
+app.get("/blogs/:id", (req, res) => {
 
     const q = "SELECT users.id,blogs.id,title,username,blogs.user_id,image_url,body,blogs.created_at FROM users JOIN blogs ON users.id=blogs.user_id WHERE blogs.id = " + req.params.id + ";";
     const q2 = "SELECT comments.user_id,blogs.id,username,comments.id,comment_text,blog_id,comments.created_at FROM comments JOIN users ON users.id = comments.user_id JOIN blogs ON blogs.id = comments.blog_id WHERE blog_id =" + req.params.id + ";";
-    connection.query(q + q2, function(err, blog) {
+    connection.query(q + q2, (err, blog) => {
         if (err) throw err;
         res.render("show", { blog: blog[0][0], comment: blog[1] });
     });
@@ -212,10 +220,10 @@ app.get("/blogs/:id", function(req, res) {
 
 // EDIT ROUTE - BLOGS
 
-app.get("/blogs/:id/edit", isLoggedIn, function(req, res) {
+app.get("/blogs/:id/edit", isLoggedIn, (req, res) => {
     const q = "SELECT * FROM blogs WHERE id = " + req.params.id;
 
-    connection.query(q, function(err, blog) {
+    connection.query(q, (err, blog) => {
         if (err) throw err;
         res.render("edit", { blog: blog[0] });
     });
@@ -223,10 +231,10 @@ app.get("/blogs/:id/edit", isLoggedIn, function(req, res) {
 
 // UPDATE ROUTE - BLOGS
 
-app.put("/blogs/:id", isLoggedIn, function(req, res) {
+app.put("/blogs/:id", isLoggedIn, (req, res) => {
     const requestBody = req.sanitize(req.body.blog.body);
 
-    connection.query("UPDATE blogs SET title = ? , body = ? WHERE id = ? ", [req.body.blog.title, requestBody, req.params.id], function(err, blog, fields) {
+    connection.query("UPDATE blogs SET title = ? , body = ? WHERE id = ? ", [req.body.blog.title, requestBody, req.params.id], (err, blog, fields) => {
         if (err) throw err;
         res.redirect("/blogs/" + req.params.id);
     });
@@ -234,9 +242,9 @@ app.put("/blogs/:id", isLoggedIn, function(req, res) {
 
 // DELETE ROUTE - BLOGS
 
-app.delete("/blogs/:id", isLoggedIn, function(req, res) {
+app.delete("/blogs/:id", isLoggedIn, (req, res) => {
 
-    connection.query("DELETE FROM comments WHERE blog_id = " + req.params.id + ";DELETE FROM blogs WHERE id = " + req.params.id + ";", function(error, blog, fields) {
+    connection.query("DELETE FROM comments WHERE blog_id = " + req.params.id + ";DELETE FROM blogs WHERE id = " + req.params.id + ";", (error, blog, fields) => {
         if (error) throw error;
         res.redirect("/blogs");
     });
@@ -245,9 +253,9 @@ app.delete("/blogs/:id", isLoggedIn, function(req, res) {
 
 // CREATE ROUTE - COMMENTS
 
-app.post("/blogs/:id", isLoggedIn, function(req, res) {
+app.post("/blogs/:id", isLoggedIn, (req, res) => {
     const blog_id = req.params.id;
-    connection.query("INSERT INTO comments(comment_text,blog_id,user_id) VALUES(?,?,?);", [req.body.comment.comment_text, blog_id, req.user.id], function(error, comment, fields) {
+    connection.query("INSERT INTO comments(comment_text,blog_id,user_id) VALUES(?,?,?);", [req.body.comment.comment_text, blog_id, req.user.id], (error, comment, fields) => {
         if (error) throw error;
         res.redirect("/blogs/" + blog_id);
     });
@@ -255,8 +263,8 @@ app.post("/blogs/:id", isLoggedIn, function(req, res) {
 
 // DELETE ROUTE - COMMENTS
 
-app.delete("/blogs/:id/:comment_id", isLoggedIn, function(req, res) {
-    connection.query("DELETE FROM comments WHERE id = " + req.params.comment_id + ";", function(error, comment, fields) {
+app.delete("/blogs/:id/:comment_id", isLoggedIn, (req, res) => {
+    connection.query("DELETE FROM comments WHERE id = " + req.params.comment_id + ";", (error, comment, fields) => {
         if (error) throw error;
         res.redirect("/blogs/" + req.params.id);
     });
@@ -267,11 +275,11 @@ app.delete("/blogs/:id/:comment_id", isLoggedIn, function(req, res) {
 
 // AUTH ROUTES
 
-app.get("/register", function(req, res) {
+app.get("/register", (req, res) => {
     res.render("register");
 });
 
-app.post("/register", function(req, res, next) {
+app.post("/register", (req, res, next) => {
     passport.authenticate("local-signup", {
         successRedirect: "/",
         failureRedirect: "/register",
@@ -279,11 +287,11 @@ app.post("/register", function(req, res, next) {
     })(req, res);
 });
 
-app.get("/login", function(req, res) {
+app.get("/login", (req, res) => {
     res.render("login");
 });
 
-app.post("/login", function(req, res, next) {
+app.post("/login", (req, res, next) => {
     passport.authenticate("local-login", {
         successRedirect: "/",
         failureRedirect: "/login",
@@ -291,24 +299,11 @@ app.post("/login", function(req, res, next) {
     })(req, res);
 });
 
-app.get('/logout', function(req, res) {
+app.get('/logout', (req, res) => {
     req.logout();
     res.redirect('/');
 })
 
-
-// MIDDLEWARES
-
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect("/login");
-}
-
-
 const port = process.env.PORT || 3000;
 
-app.listen(port, function() {
-    console.log("Start Blogging");
-});
+app.listen(port, () => console.log("Start Blogging"));
