@@ -12,6 +12,7 @@ const express = require('express'),
     flash = require('connect-flash'),
     path = require('path'),
     multer = require('multer'),
+    isLoggedIn = require('./middlewares/isLoggedIn'),
     LocalStrategy = require('passport-local');
 
 const port = process.env.PORT || 3000;
@@ -125,15 +126,6 @@ const storage = multer.diskStorage({
         cb(null,file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
 });
-
-
-// Check if the user is logged in
-const isLoggedIn = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect('/login');
-}
 
 // Check File Type
 const checkFileType = (file, cb) => {
