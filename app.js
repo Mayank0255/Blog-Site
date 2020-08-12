@@ -1,19 +1,19 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const express = require("express"),
+const express = require('express'),
     app = express(),
     session = require('express-session'),
-    bodyParser = require("body-parser"),
-    expressSanitizer = require("express-sanitizer"),
-    methodOverride = require("method-override"),
-    mysql = require("mysql"),
+    bodyParser = require('body-parser'),
+    expressSanitizer = require('express-sanitizer'),
+    methodOverride = require('method-override'),
+    mysql = require('mysql'),
     bcrypt = require('bcrypt-nodejs'),
-    passport = require("passport"),
-    flash = require("connect-flash"),
-    path = require("path"),
-    multer = require("multer"),
-    LocalStrategy = require("passport-local");
+    passport = require('passport'),
+    flash = require('connect-flash'),
+    path = require('path'),
+    multer = require('multer'),
+    LocalStrategy = require('passport-local');
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
@@ -29,7 +29,7 @@ const isLoggedIn = (req, res, next) => {
     if (req.isAuthenticated()) {
         return next();
     }
-    res.redirect("/login");
+    res.redirect('/login');
 }
 
 // Check File Type
@@ -58,15 +58,15 @@ const upload = multer({
 }).single('image');
 
 // APP CONFIG
-app.set("view engine", "ejs");
+app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressSanitizer());
-app.use(methodOverride("_method"));
+app.use(methodOverride('_method'));
 
 // PASSPORT CONFIG
 app.use(session({
-    secret: "System Breached",
+    secret: 'System Breached',
     resave: false,
     saveUninitialized: false
 }));
@@ -97,7 +97,7 @@ connection.connect((err) => {
 
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser((id, done) => {
-    connection.query("SELECT * FROM users WHERE id = ? ", [id],
+    connection.query('SELECT * FROM users WHERE id = ? ', [id],
         (err, rows) => {
             done(err, rows[0]);
         });
@@ -112,7 +112,7 @@ passport.use(
             passReqToCallback: true
         },
         (req, username, password, done) => {
-            connection.query("SELECT * FROM users WHERE username = ? ", [username], (err, rows) => {
+            connection.query('SELECT * FROM users WHERE username = ? ', [username], (err, rows) => {
                 if (err)
                     return done(err);
                 if (rows.length) {
@@ -123,7 +123,7 @@ passport.use(
                         password: bcrypt.hashSync(password, null, null)
                     };
 
-                    const insertQuery = "INSERT INTO users (username, password) values (?, ?)";
+                    const insertQuery = 'INSERT INTO users (username, password) values (?, ?)';
 
                     connection.query(insertQuery, [newUserMysql.username, newUserMysql.password],
                         (err, rows) => {
@@ -146,7 +146,7 @@ passport.use(
             passReqToCallback: true
         },
         (req, username, password, done) => {
-            connection.query("SELECT * FROM users WHERE username = ? ", [username],
+            connection.query('SELECT * FROM users WHERE username = ? ', [username],
                 (err, rows) => {
                     if (err)
                         return done(err);
@@ -164,28 +164,28 @@ passport.use(
 connection.query('USE blog_app');
 
 // ROUTES
-app.get("/", (req, res) => {
-    res.redirect("/blogs");
+app.get('/', (req, res) => {
+    res.redirect('/blogs');
 });
 
-app.get("/blogs", (req, res) => {
-    const q = "SELECT * FROM blogs ORDER BY created_at DESC;";
-    const q2 = "SELECT COUNT(*) AS count FROM blogs;";
-    const q3 = "SELECT COUNT(*) AS count FROM users;";
-    const q4 = "SELECT COUNT(*) AS count FROM comments;";
+app.get('/blogs', (req, res) => {
+    const q = 'SELECT * FROM blogs ORDER BY created_at DESC;';
+    const q2 = 'SELECT COUNT(*) AS count FROM blogs;';
+    const q3 = 'SELECT COUNT(*) AS count FROM users;';
+    const q4 = 'SELECT COUNT(*) AS count FROM comments;';
     connection.query(q2 + q + q3 + q4, (err, blogs, fields) => {
         if (err) throw err;
-        res.render("index", { blogs: blogs[1], blogcount: blogs[0][0].count, usercount: blogs[2][0].count, commentcount: blogs[3][0].count });
+        res.render('index', { blogs: blogs[1], blogcount: blogs[0][0].count, usercount: blogs[2][0].count, commentcount: blogs[3][0].count });
     });
 });
 
 // NEW ROUTE - BLOGS
-app.get("/blogs/new", isLoggedIn, (req, res) => {
-    res.render("new");
+app.get('/blogs/new', isLoggedIn, (req, res) => {
+    res.render('new');
 });
 
 // CREATE ROUTE - BLOGS
-app.post("/blogs", isLoggedIn, (req, res) => {
+app.post('/blogs', isLoggedIn, (req, res) => {
     upload(req, res, (err) => {
         if(err){
             res.render('new', {
@@ -200,7 +200,7 @@ app.post("/blogs", isLoggedIn, (req, res) => {
                 console.log('File Uploaded!');
                 connection.query('INSERT INTO blogs(title,image_url,body,user_id) VALUES(?,?,?,?)', [req.body.blog.title, req.file.filename, req.body.blog.body, req.user.id], (err, result) => {
                     if (err) throw err;
-                    res.redirect("/");
+                    res.redirect('/');
                 });
             }
         }
@@ -208,65 +208,65 @@ app.post("/blogs", isLoggedIn, (req, res) => {
 });
 
 // SHOW ROUTE - BLOGS
-app.get("/blogs/:id", (req, res) => {
+app.get('/blogs/:id', (req, res) => {
 
-    const q = "SELECT users.id,blogs.id,title,username,blogs.user_id,image_url,body,blogs.created_at FROM users JOIN blogs ON users.id=blogs.user_id WHERE blogs.id = " + req.params.id + ";";
-    const q2 = "SELECT comments.user_id,blogs.id,username,comments.id,comment_text,blog_id,comments.created_at FROM comments JOIN users ON users.id = comments.user_id JOIN blogs ON blogs.id = comments.blog_id WHERE blog_id =" + req.params.id + ";";
+    const q = 'SELECT users.id,blogs.id,title,username,blogs.user_id,image_url,body,blogs.created_at FROM users JOIN blogs ON users.id=blogs.user_id WHERE blogs.id = ' + req.params.id + '';'';
+    const q2 = 'SELECT comments.user_id,blogs.id,username,comments.id,comment_text,blog_id,comments.created_at FROM comments JOIN users ON users.id = comments.user_id JOIN blogs ON blogs.id = comments.blog_id WHERE blog_id =' + req.params.id + '';'';
     connection.query(q + q2, (err, blog) => {
         if (err) throw err;
-        res.render("show", { blog: blog[0][0], comment: blog[1] });
+        res.render('show', { blog: blog[0][0], comment: blog[1] });
     });
 });
 
 // EDIT ROUTE - BLOGS
 
-app.get("/blogs/:id/edit", isLoggedIn, (req, res) => {
-    const q = "SELECT * FROM blogs WHERE id = " + req.params.id;
+app.get('/blogs/:id/edit', isLoggedIn, (req, res) => {
+    const q = 'SELECT * FROM blogs WHERE id = ' + req.params.id;
 
     connection.query(q, (err, blog) => {
         if (err) throw err;
-        res.render("edit", { blog: blog[0] });
+        res.render('edit', { blog: blog[0] });
     });
 });
 
 // UPDATE ROUTE - BLOGS
 
-app.put("/blogs/:id", isLoggedIn, (req, res) => {
+app.put('/blogs/:id', isLoggedIn, (req, res) => {
     const requestBody = req.sanitize(req.body.blog.body);
 
-    connection.query("UPDATE blogs SET title = ? , body = ? WHERE id = ? ", [req.body.blog.title, requestBody, req.params.id], (err, blog, fields) => {
+    connection.query('UPDATE blogs SET title = ? , body = ? WHERE id = ? ', [req.body.blog.title, requestBody, req.params.id], (err, blog, fields) => {
         if (err) throw err;
-        res.redirect("/blogs/" + req.params.id);
+        res.redirect('/blogs/' + req.params.id);
     });
 });
 
 // DELETE ROUTE - BLOGS
 
-app.delete("/blogs/:id", isLoggedIn, (req, res) => {
+app.delete('/blogs/:id', isLoggedIn, (req, res) => {
 
-    connection.query("DELETE FROM comments WHERE blog_id = " + req.params.id + ";DELETE FROM blogs WHERE id = " + req.params.id + ";", (error, blog, fields) => {
+    connection.query('DELETE FROM comments WHERE blog_id = ' + req.params.id + ';DELETE FROM blogs WHERE id = ' + req.params.id + ';', (error, blog, fields) => {
         if (error) throw error;
-        res.redirect("/blogs");
+        res.redirect('/blogs');
     });
 });
 
 
 // CREATE ROUTE - COMMENTS
 
-app.post("/blogs/:id", isLoggedIn, (req, res) => {
+app.post('/blogs/:id', isLoggedIn, (req, res) => {
     const blog_id = req.params.id;
-    connection.query("INSERT INTO comments(comment_text,blog_id,user_id) VALUES(?,?,?);", [req.body.comment.comment_text, blog_id, req.user.id], (error, comment, fields) => {
+    connection.query('INSERT INTO comments(comment_text,blog_id,user_id) VALUES(?,?,?);', [req.body.comment.comment_text, blog_id, req.user.id], (error, comment, fields) => {
         if (error) throw error;
-        res.redirect("/blogs/" + blog_id);
+        res.redirect('/blogs/' + blog_id);
     });
 });
 
 // DELETE ROUTE - COMMENTS
 
-app.delete("/blogs/:id/:comment_id", isLoggedIn, (req, res) => {
-    connection.query("DELETE FROM comments WHERE id = " + req.params.comment_id + ";", (error, comment, fields) => {
+app.delete('/blogs/:id/:comment_id', isLoggedIn, (req, res) => {
+    connection.query('DELETE FROM comments WHERE id = ' + req.params.comment_id + ';', (error, comment, fields) => {
         if (error) throw error;
-        res.redirect("/blogs/" + req.params.id);
+        res.redirect('/blogs/' + req.params.id);
     });
 });
 
@@ -275,26 +275,26 @@ app.delete("/blogs/:id/:comment_id", isLoggedIn, (req, res) => {
 
 // AUTH ROUTES
 
-app.get("/register", (req, res) => {
-    res.render("register");
+app.get('/register', (req, res) => {
+    res.render('register');
 });
 
-app.post("/register", (req, res, next) => {
-    passport.authenticate("local-signup", {
-        successRedirect: "/",
-        failureRedirect: "/register",
+app.post('/register', (req, res, next) => {
+    passport.authenticate('local-signup', {
+        successRedirect: '/',
+        failureRedirect: '/register',
         failureFlash: true
     })(req, res);
 });
 
-app.get("/login", (req, res) => {
-    res.render("login");
+app.get('/login', (req, res) => {
+    res.render('login');
 });
 
-app.post("/login", (req, res, next) => {
-    passport.authenticate("local-login", {
-        successRedirect: "/",
-        failureRedirect: "/login",
+app.post('/login', (req, res, next) => {
+    passport.authenticate('local-login', {
+        successRedirect: '/',
+        failureRedirect: '/login',
         failureFlash: true
     })(req, res);
 });
@@ -306,4 +306,4 @@ app.get('/logout', (req, res) => {
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => console.log("Start Blogging"));
+app.listen(port, () => console.log('Start Blogging'));
