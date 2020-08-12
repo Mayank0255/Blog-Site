@@ -72,18 +72,6 @@ app.use(function(req, res, next) {
     next();
 });
 
-
-
-// DATABASE CONFIG
-
-// const connection = mysql.createConnection({
-//     host: 'localhost',
-//     user: 'root',
-//     password: 'Mayank15$',
-//     database: 'blog_app',
-//     multipleStatements: true
-// });
-
 const connection = mysql.createConnection({
     host: process.env.HOST,
     user: process.env.USER,
@@ -108,7 +96,6 @@ passport.deserializeUser(function(id, done) {
 });
 
 // passport sign-up
-
 passport.use(
     'local-signup',
     new LocalStrategy({
@@ -143,7 +130,6 @@ passport.use(
 
 
 // passport login
-
 passport.use(
     'local-login',
     new LocalStrategy({
@@ -167,11 +153,10 @@ passport.use(
         })
 );
 
-// connection.query('USE blog_app');
+connection.query('USE blog_app');
 
 // ROUTES
 app.get("/", function(req, res) {
-    // res.send("WELCOME, GOTO /blogs");
     res.redirect("/blogs");
 });
 
