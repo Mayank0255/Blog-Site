@@ -13,6 +13,7 @@ const express = require('express'),
     path = require('path'),
     multer = require('multer'),
     isLoggedIn = require('./middlewares/isLoggedIn'),
+    configHolder = require('./config/config'),
     LocalStrategy = require('passport-local');
 
 const port = process.env.PORT || 3000;
@@ -41,10 +42,10 @@ app.use((req, res, next) => {
 });
 
 const connection = mysql.createConnection({
-    host: process.env.HOST,
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    database: process.env.DATABASE,
+    host: configHolder.host_name,
+    user: configHolder.user_name,
+    password: configHolder.password,
+    database: configHolder.database,
     multipleStatements: true
 });
 
