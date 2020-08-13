@@ -1,7 +1,7 @@
 const isLoggedIn = require('../middlewares/isLoggedIn');
+const multer = require('multer');
 
 const express = require('express');
-const multer = require('multer');
 const router = express.Router();
 
 // Set The Storage Engine
@@ -88,7 +88,6 @@ router.get('/blogs/:id', (req, res) => {
 });
 
 // EDIT ROUTE - BLOGS
-
 router.get('/blogs/:id/edit', isLoggedIn, (req, res) => {
     const q = 'SELECT * FROM blogs WHERE id = ' + req.params.id;
 
@@ -99,7 +98,6 @@ router.get('/blogs/:id/edit', isLoggedIn, (req, res) => {
 });
 
 // UPDATE ROUTE - BLOGS
-
 router.put('/blogs/:id', isLoggedIn, (req, res) => {
     const requestBody = req.sanitize(req.body.blog.body);
 
@@ -110,7 +108,6 @@ router.put('/blogs/:id', isLoggedIn, (req, res) => {
 });
 
 // DELETE ROUTE - BLOGS
-
 router.delete('/blogs/:id', isLoggedIn, (req, res) => {
     pool.query('DELETE FROM comments WHERE blog_id = ' + req.params.id + ';DELETE FROM blogs WHERE id = ' + req.params.id + ';', error => {
         if (error) throw error;

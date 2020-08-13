@@ -108,29 +108,11 @@ passport.use(
 );
 
 app.use(require('./routes/blogs'));
+app.use(require('./routes/comments'));
 
 // ROUTES
 app.get('/', (req, res) => {
     res.redirect('/blogs');
-});
-
-// CREATE ROUTE - COMMENTS
-
-app.post('/blogs/:id', isLoggedIn, (req, res) => {
-    const blog_id = req.params.id;
-    pool.query('INSERT INTO comments(comment_text,blog_id,user_id) VALUES(?,?,?);', [req.body.comment.comment_text, blog_id, req.user.id], error => {
-        if (error) throw error;
-        res.redirect('/blogs/' + blog_id);
-    });
-});
-
-// DELETE ROUTE - COMMENTS
-
-app.delete('/blogs/:id/:comment_id', isLoggedIn, (req, res) => {
-    pool.query('DELETE FROM comments WHERE id = ' + req.params.comment_id + ';', error => {
-        if (error) throw error;
-        res.redirect('/blogs/' + req.params.id);
-    });
 });
 
 // AUTH ROUTES
