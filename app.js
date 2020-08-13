@@ -10,7 +10,6 @@ const express = require('express'),
     passport = require('passport'),
     flash = require('connect-flash'),
     path = require('path'),
-    isLoggedIn = require('./middlewares/isLoggedIn'),
     pool = require('./config/db.config'),
     LocalStrategy = require('passport-local');
 
@@ -109,41 +108,11 @@ passport.use(
 
 app.use(require('./routes/blogs'));
 app.use(require('./routes/comments'));
+app.use(require('./routes/auth'));
 
 // ROUTES
 app.get('/', (req, res) => {
     res.redirect('/blogs');
 });
-
-// AUTH ROUTES
-
-app.get('/register', (req, res) => {
-    res.render('register');
-});
-
-app.post('/register', (req, res) => {
-    passport.authenticate('local-signup', {
-        successRedirect: '/',
-        failureRedirect: '/register',
-        failureFlash: true
-    })(req, res);
-});
-
-app.get('/login', (req, res) => {
-    res.render('login');
-});
-
-app.post('/login', (req, res) => {
-    passport.authenticate('local-login', {
-        successRedirect: '/',
-        failureRedirect: '/login',
-        failureFlash: true
-    })(req, res);
-});
-
-app.get('/logout', (req, res) => {
-    req.logout();
-    res.redirect('/');
-})
 
 app.listen(port, () => console.log('Start Blogging'));
