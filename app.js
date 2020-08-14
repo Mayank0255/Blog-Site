@@ -6,12 +6,10 @@ const express = require('express'),
     bodyParser = require('body-parser'),
     expressSanitizer = require('express-sanitizer'),
     methodOverride = require('method-override'),
-    bcrypt = require('bcrypt-nodejs'),
     passport = require('passport'),
     flash = require('connect-flash'),
     path = require('path'),
-    pool = require('./config/db.config'),
-    LocalStrategy = require('passport-local');
+    pool = require('./config/db.config');
 
 const port = process.env.PORT || 3000;
 
@@ -48,63 +46,6 @@ passport.deserializeUser((id, done) => {
             done(err, rows[0]);
         });
 });
-
-// passport sign-up
-passport.use(
-    'local-signup',
-    new LocalStrategy({
-            usernameField: 'username',
-            passwordField: 'password',
-            passReqToCallback: true
-        },
-        (req, username, password, done) => {
-            pool.query('SELECT * FROM users WHERE username = ? ', [username], (err, rows) => {
-                if (err)
-                    return done(err);
-                if (rows.length) {
-                    return done(null, false, req.flash('signupMessage', 'That is already taken'));
-                } else {
-                    const newUserMysql = {
-                        username: username,
-                        password: bcrypt.hashSync(password, null, null)
-                    };
-
-                    const insertQuery = 'INSERT INTO users (username, password) values (?, ?)';
-
-                    pool.query(insertQuery, [newUserMysql.username, newUserMysql.password],
-                        (err, rows) => {
-                            newUserMysql.id = rows.insertId;
-
-                            return done(null, newUserMysql);
-                        });
-                }
-            });
-        })
-);
-
-// passport login
-passport.use(
-    'local-login',
-    new LocalStrategy({
-            usernameField: 'username',
-            passwordField: 'password',
-            passReqToCallback: true
-        },
-        (req, username, password, done) => {
-            pool.query('SELECT * FROM users WHERE username = ? ', [username],
-                (err, rows) => {
-                    if (err)
-                        return done(err);
-                    if (!rows.length) {
-                        return done(null, false, req.flash('loginMessage', 'No User Found'));
-                    }
-                    if (!bcrypt.compareSync(password, rows[0].password))
-                        return done(null, false, req.flash('loginMessage', 'Wrong Password'));
-
-                    return done(null, rows[0]);
-                });
-        })
-);
 
 app.use(require('./routes/blogs'));
 app.use(require('./routes/comments'));
