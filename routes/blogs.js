@@ -11,7 +11,14 @@ router.get('/blogs', (req, res) => {
     const q4 = 'SELECT COUNT(*) AS count FROM comments;';
     pool.query(q2 + q + q3 + q4, (err, blogs) => {
         if (err) throw err;
-        res.render('index', { blogs: blogs[1], blogcount: blogs[0][0].count, usercount: blogs[2][0].count, commentcount: blogs[3][0].count });
+        res.render(
+            'index',
+            {
+                blogs: blogs[1],
+                blogCount: blogs[0][0].count,
+                userCount: blogs[2][0].count,
+                commentCount: blogs[3][0].count
+            });
     });
 });
 
@@ -50,7 +57,12 @@ router.get('/blogs/:id', (req, res) => {
     const q2 = 'SELECT comments.user_id,blogs.id,username,comments.id,comment_text,blog_id,comments.created_at FROM comments JOIN users ON users.id = comments.user_id JOIN blogs ON blogs.id = comments.blog_id WHERE blog_id =' + req.params.id + ';';
     pool.query(q + q2, (err, blog) => {
         if (err) throw err;
-        res.render('show', { blog: blog[0][0], comment: blog[1] });
+        res.render(
+            'show',
+            {
+                blog: blog[0][0],
+                comment: blog[1]
+            });
     });
 });
 
