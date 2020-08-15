@@ -2,9 +2,6 @@ const passport = require('passport');
 const bcrypt = require('bcrypt-nodejs');
 const LocalStrategy = require('passport-local');
 
-const express = require('express');
-const router = express.Router();
-
 // passport sign-up
 passport.use(
     'local-signup',
