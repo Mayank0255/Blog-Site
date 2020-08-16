@@ -4,24 +4,39 @@ const blogsController = require('../controllers/blogs');
 const express = require('express');
 const router = express.Router();
 
+/** @route      GET /blogs
+ *  @desc       blogs page
+ */
 router.get('/blogs', blogsController.retrieveAll);
 
-// NEW ROUTE - BLOGS
+/** @route      GET /blogs/new
+ *  @desc       new blog page
+ */
 router.get('/blogs/new', isLoggedIn, blogsController.addPage);
 
-// CREATE ROUTE - BLOGS
+/** @route      POST /blogs
+ *  @desc       create blog
+ */
 router.post('/blogs', isLoggedIn, blogsController.addOne);
 
-// SHOW ROUTE - BLOGS
+/** @route      GET /blogs/:id
+ *  @desc       blog page
+ */
 router.get('/blogs/:id', blogsController.retrieveOne);
 
-// EDIT ROUTE - BLOGS
+/** @route      GET /blogs/:id/edit
+ *  @desc       edit page
+ */
 router.get('/blogs/:id/edit', isLoggedIn, blogsController.updatePage);
 
-// UPDATE ROUTE - BLOGS
+/** @route      PUT /blogs/:id
+ *  @desc       update blog
+ */
 router.put('/blogs/:id', isLoggedIn, blogsController.updateOne);
 
-// DELETE ROUTE - BLOGS
+/** @route      DELETE /blogs/:id
+ *  @desc       delete blog
+ */
 router.delete('/blogs/:id', isLoggedIn, blogsController.deleteOne);
 
 module.exports = router;
