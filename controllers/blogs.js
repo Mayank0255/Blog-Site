@@ -14,14 +14,17 @@ const retrieveAll = (req, res) => {
                 blogs: blogs[0],
                 blogCount: blogs[1][0].count,
                 userCount: blogs[2][0].count,
-                commentCount: blogs[3][0].count
+                commentCount: blogs[3][0].count,
+                active: 'index'
             });
     });
 };
 
 // NEW ROUTE - BLOGS
 const addPage = (req, res) => {
-    res.render('new');
+    res.render('new', {
+        active: 'new'
+    });
 };
 
 // CREATE ROUTE - BLOGS
@@ -57,7 +60,8 @@ const retrieveOne = (req, res) => {
             'show',
             {
                 blog: blog[0][0],
-                comment: blog[1]
+                comment: blog[1],
+                active: 'show'
             });
     });
 };
@@ -69,7 +73,10 @@ const updatePage = (req, res) => {
 
     pool.query(query, params, (err, blog) => {
         if (err) throw err;
-        res.render('edit', { blog: blog[0] });
+        res.render('edit', {
+            blog: blog[0],
+            active: 'edit'
+        });
     });
 };
 

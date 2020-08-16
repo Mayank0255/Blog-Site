@@ -16,12 +16,12 @@
             <div style="margin-left: 30px; margin-right: 10px;" class="header item"><i class="quote left icon"></i>
                 <h3 style="margin-top: 0;">Blog Site</h3>
             </div>
-            <a href="/blogs" class="item">Home</a>
-            <a href="/blogs/new" class="item">New Blog</a>
+            <a href="/blogs" class="<%= active === 'index' ? 'active' : '' %> item">Home</a>
+            <a href="/blogs/new" class="<%= active === 'new' ? 'active' : '' %> item">New Blog</a>
 
             <% if(!currentUser){ %>
-                <a id="authLink" style="margin-left: 55%;" href="/login" class="item">Login</a>
-                <a style="float: right;" href="/register" class="item">Sign-Up</a>
+                <a id="authLink" style="margin-left: 55%;" href="/login" class="<%= active === 'login' ? 'active' : '' %> item">Login</a>
+                <a style="float: right;" href="/register" class="<%= active === 'register' ? 'active' : '' %> item">Sign-Up</a>
                 <% } else { %>
                     <a id="authLink" style="margin-left: 55%;" href="#" class="item">Signed in as <%= currentUser.username %></a>
                     <a style="float:right" href="/logout" class="item">Logout</a>

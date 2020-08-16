@@ -62,7 +62,9 @@ passport.use(
 
 // register user
 const registerPage = (req, res) => {
-    res.render('register');
+    res.render('register', {
+        active: 'register'
+    });
 };
 
  const register = (req, res) => {
@@ -75,7 +77,9 @@ const registerPage = (req, res) => {
 
 // log-in user
 const loginPage = (req, res) => {
-    res.render('login');
+    res.render('login', {
+        active: 'login'
+    });
 };
 
 const login = (req, res) => {

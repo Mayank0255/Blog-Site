@@ -1,36 +1,4 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-
-<head>
-    <meta charset="utf-8">
-    <title>Blog Site</title>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.css">
-    <link rel="icon" href="/images/quote.png" type="image/icon">
-    <link rel="stylesheet" href="/stylesheets/app.css">
-</head>
-
-<body>
-
-    <div class="ui inverted segment" style="border-radius: 0;">
-        <div class="ui inverted secondary menu">
-            <div style="margin-left: 30px; margin-right: 10px;" class="header item"><i class="quote left icon"></i>
-                <h3 style="margin-top: 0;">Blog Site</h3>
-            </div>
-            <a href="/blogs" class="active item">Home</a>
-            <a href="/blogs/new" class="item">New Blog</a>
-            <!-- <div style="display: inline;"> -->
-            <% if(!currentUser){ %>
-                <a id="authLink" style="margin-left: 55%;" href="/login" class="item">Login</a>
-                <a style="float: right;" href="/register" class="item">Sign-Up</a>
-                <% } else { %>
-                    <a id="authLink" style="margin-left: 55%;" href="#" class="item">Signed in as <%= currentUser.username %></a>
-                    <a style="float:right" href="/logout" class="item">Logout</a>
-                    <% } %>
-                        <!-- </div> -->
-        </div>
-    </div>
-
-    <br><br><br><br>
+<%include ./partials/header%>
     <div class="ui labeled button" style="bottom: 30%; margin-left: 30px; float: left; position: fixed;" tabindex="0">
         <div class="ui secondary button">
             <strong><h3>Blog Count</h3></strong>
@@ -98,4 +66,4 @@
             </div>
         </div>
     </div>
-    <%include ./partials/footer%>
+<%include ./partials/footer%>
