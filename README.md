@@ -27,7 +27,11 @@ A Blog Application that provides the user the accessibility to perform most of t
     
     npm audit fix     (Run this to audit fix all the vulnerabilities)
     ```
-3. Start the server - 
+3. Run `setup.sql` file in the mysql client
+    ```
+    source <file path>/setup.sql
+    ```
+4. Start the server - 
     ```
     npm start (run the server)
     ```
